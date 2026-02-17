@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BrewLab — specialty coffee & bakery</title>
+  <meta name="description" content="BrewLab — кофейня: авторский кофе, выпечка, десерты. Заказ онлайн и бронирование столика." />
+
+  <style>
+    :root{
+      --bg:#0b0a09;
+      --panel: rgba(255,255,255,0.06);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --line: rgba(255,255,255,0.12);
+      --warm:#f59e0b;       /* amber */
+      --warm2:#fb7185;      /* rose */
+      --mint:#34d399;       /* green */
+      --shadow: 0 18px 60px rgba(0,0,0,0.45);
+      --radius: 18px;
+      --max: 1120px;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 80% -10%, rgba(245,158,11,0.18), transparent 60%),
+        radial-gradient(800px 500px at 10% 10%, rgba(251,113,133,0.16), transparent 55%),
+        radial-gradient(700px 450px at 70% 85%, rgba(52,211,153,0.10), transparent 60%),
+        linear-gradient(180deg, #070606 0%, #0b0a09 40%, #070606 100%);
+      line-height:1.5;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    img{ max-width:100%; display:block; }
+    .container{ max-width:var(--max); margin:0 auto; padding:0 18px; }
+
+    /* Header */
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(7,6,6,0.6);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      letter-spacing:0.2px;
+    }
+    .logo{
+      width:36px; height:36px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.18);
+      background:
+        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0) 60%),
+        linear-gradient(135deg, rgba(245,158,11,0.95), rgba(251,113,133,0.90));
+      box-shadow: 0 14px 40px rgba(245,158,11,0.14);
+    }
+    nav.links{
+      display:none;
+      gap:18px;
+      align-items:center;
+      color:var(--muted);
+      font-weight:700;
+      font-size:14px;
+    }
+    nav.links a:hover{ color:var(--text); }
+
+    .actions{ display:flex; align-items:center; gap:10px; }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+      transition: transform 0.08s ease, background 0.2s ease, border-color 0.2s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.24);
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.primary{
+      border-color: rgba(245,158,11,0.35);
+      background: linear-gradient(135deg, rgba(245,158,11,0.16), rgba(251,113,133,0.10));
+      box-shadow: 0 18px 60px rgba(245,158,11,0.08);
+    }
+    .btn.primary:hover{
+      border-color: rgba(245,158,11,0.55);
+      background: linear-gradient(135deg, rgba(245,158,11,0.20), rgba(251,113,133,0.14));
+    }
+    .icon{ width:18px; height:18px; display:inline-block; }
+
+    .burger{
+      width:42px; height:42px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .burger:hover{ background: rgba(255,255,255,0.10); }
+
+    .drawer{
+      display:none;
+      border-top:1px solid var(--line);
+      padding:10px 0 14px;
+    }
+    .drawer.open{ display:block; }
+    .drawer a{
+      display:block;
+      padding:10px 4px;
+      color: rgba(255,255,255,0.78);
+      font-weight:800;
+      font-size:14px;
+    }
+    .drawer a:hover{ color:var(--text); }
+
+    /* Hero */
+    main{ padding: 18px 0 0; }
+    .hero{
+      padding: 18px 0 22px;
+    }
+    .hero-wrap{
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:0;
+      align-items:stretch;
+    }
+    .hero-copy{
+      padding: 22px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:0.2px;
+    }
+    .badge .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: var(--warm);
+      box-shadow: 0 0 0 6px rgba(245,158,11,0.10);
+    }
+    h1{
+      margin: 14px 0 10px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: -0.6px;
+    }
+    .lead{
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 60ch;
+    }
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top:10px;
+    }
+    .quick{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .quick .q{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .quick b{ color: var(--text); }
+
+    .hero-visual{
+      min-height: 300px;
+      border-top:1px solid rgba(255,255,255,0.10);
+      background:
+        radial-gradient(260px 260px at 20% 30%, rgba(245,158,11,0.20), transparent 60%),
+        radial-gradient(320px 320px at 80% 40%, rgba(251,113,133,0.18), transparent 60%),
+        radial-gradient(260px 260px at 55% 85%, rgba(52,211,153,0.12), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      position:relative;
+    }
+    .polaroid{
+      position:absolute;
+      left: 18px;
+      right: 18px;
+      top: 18px;
+      bottom: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.24);
+      box-shadow: 0 22px 70px rgba(0,0,0,0.35);
+      overflow:hidden;
+      display:grid;
+      grid-template-rows: 1fr auto;
+    }
+    .photo{
+      position:relative;
+      background:
+        radial-gradient(240px 240px at 30% 30%, rgba(255,255,255,0.12), transparent 60%),
+        linear-gradient(135deg, rgba(245,158,11,0.22), rgba(251,113,133,0.16));
+    }
+    .photo:before{
+      content:"";
+      position:absolute; inset: 0;
+      background:
+        radial-gradient(380px 220px at 60% 40%, rgba(0,0,0,0.35), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.55));
+      pointer-events:none;
+    }
+    .latte-art{
+      position:absolute;
+      width: 220px; height: 220px;
+      border-radius: 999px;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%,-50%);
+      border: 1px solid rgba(255,255,255,0.18);
+      background:
+        radial-gradient(50% 50% at 50% 50%, rgba(255,255,255,0.20), transparent 60%),
+        radial-gradient(60% 60% at 45% 40%, rgba(255,255,255,0.16), transparent 62%),
+        radial-gradient(70% 70% at 55% 65%, rgba(0,0,0,0.28), transparent 60%),
+        linear-gradient(135deg, rgba(245,158,11,0.35), rgba(251,113,133,0.22));
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+    .caption{
+      padding: 12px 14px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .caption .left{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .caption .t{
+      font-weight:900;
+      letter-spacing: -0.2px;
+    }
+    .caption .s{
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.78);
+      font-weight:900;
+      font-size:12px;
+      font-family: var(--mono);
+      white-space:nowrap;
+    }
+
+    /* Sections */
+    section{ padding: 24px 0; }
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      margin-bottom: 14px;
+    }
+    .section-head h2{
+      margin:0;
+      font-size: 22px;
+      letter-spacing: -0.2px;
+    }
+    .section-head p{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 60ch;
+    }
+
+    .grid-3{ display:grid; grid-template-columns: 1fr; gap: 12px; }
+    .card{
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.25);
+    }
+    .card h3{ margin: 8px 0 6px; font-size: 16px; }
+    .card p{ margin:0; color: var(--muted); font-size: 14px; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-weight:900;
+      font-size:12px;
+      width: fit-content;
+    }
+    .pill .mini{
+      width:8px; height:8px; border-radius:999px;
+      background: var(--warm2);
+      box-shadow: 0 0 0 6px rgba(251,113,133,0.10);
+    }
+
+    /* Menu */
+    .menu-controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom: 12px;
+    }
+    .seg{
+      display:inline-flex;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      overflow:hidden;
+    }
+    .seg button{
+      border:0;
+      background: transparent;
+      color: rgba(255,255,255,0.78);
+      font-weight:900;
+      font-size: 13px;
+      padding: 10px 12px;
+      cursor:pointer;
+    }
+    .seg button.active{
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+    }
+    .search{
+      flex: 1 1 220px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    .search input{
+      border:0; outline:none;
+      background: transparent;
+      color: var(--text);
+      width:100%;
+      font-size: 14px;
+    }
+    .item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .item + .item{ margin-top: 10px; }
+    .item .meta{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      max-width: 70%;
+    }
+    .item .name{ font-weight: 900; letter-spacing: -0.2px; }
+    .item .desc{ color: var(--muted); font-size: 13px; }
+    .item .price{
+      font-weight: 900;
+      font-family: var(--mono);
+      color: rgba(255,255,255,0.86);
+      white-space:nowrap;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+    }
+    .tagline{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Testimonials */
+    .quote{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .avatar{
+      width: 42px; height: 42px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(251,113,133,0.12));
+      box-shadow: 0 16px 50px rgba(0,0,0,0.22);
+      flex: 0 0 42px;
+    }
+    .quote p{
+      margin:0;
+      color: rgba(255,255,255,0.80);
+      font-size: 14px;
+    }
+    .who{
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    /* Contact */
+    .contact-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    form{
+      display:grid;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    label{
+      display:grid;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.78);
+      font-weight: 900;
+    }
+    input, textarea, select{
+      width:100%;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      color: var(--text);
+      padding: 12px 12px;
+      outline:none;
+      font-size: 14px;
+    }
+    textarea{ min-height: 110px; resize: vertical; }
+    input:focus, textarea:focus, select:focus{
+      border-color: rgba(245,158,11,0.45);
+      box-shadow: 0 0 0 4px rgba(245,158,11,0.08);
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .hint{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .status{
+      display:none;
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .status.ok{
+      display:block;
+      border-color: rgba(52,211,153,0.35);
+      background: rgba(52,211,153,0.12);
+      color: rgba(255,255,255,0.92);
+    }
+    .status.err{
+      display:block;
+      border-color: rgba(251,113,133,0.42);
+      background: rgba(251,113,133,0.12);
+      color: rgba(255,255,255,0.92);
+    }
+
+    /* Footer */
+    footer{
+      padding: 22px 0 34px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .foot{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .foot a{ color: rgba(255,255,255,0.75); font-weight:800; }
+    .foot a:hover{ color: var(--text); }
+
+    /* Responsive */
+    @media (min-width: 820px){
+      nav.links{ display:flex; }
+      .burger{ display:none; }
+      .hero-grid{ grid-template-columns: 1.15fr 0.85fr; }
+      .hero-visual{ border-top:0; border-left:1px solid rgba(255,255,255,0.10); }
+      h1{ font-size: 46px; }
+      .lead{ font-size: 17px; }
+      .quick{ grid-template-columns: 1fr 1fr; }
+      .grid-3{ grid-template-columns: repeat(3, 1fr); }
+      .contact-grid{ grid-template-columns: 1fr 1fr; }
+      .row{ grid-template-columns: 1fr 1fr; }
+      .foot{ flex-direction:row; align-items:center; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="#top" aria-label="BrewLab">
+          <span class="logo" aria-hidden="true"></span>
+          <span>BrewLab</span>
+        </a>
+
+        <nav class="links" aria-label="Навигация">
+          <a href="#menu">Меню</a>
+          <a href="#about">О нас</a>
+          <a href="#reviews">Отзывы</a>
+          <a href="#contact">Контакты</a>
+        </nav>
+
+        <div class="actions">
+          <a class="btn primary" href="#contact">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 10h12M7 6h10M7 14h10M6 18h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Забронировать
+          </a>
+
+          <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="drawer" id="drawer" aria-label="Мобильное меню">
+        <a href="#menu">Меню</a>
+        <a href="#about">О нас</a>
+        <a href="#reviews">Отзывы</a>
+        <a href="#contact">Контакты</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="container">
+      <section class="hero">
+        <div class="hero-wrap">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <div class="badge"><span class="dot" aria-hidden="true"></span> Specialty coffee + bakery</div>
+              <h1>Кофе, который звучит. Выпечка, которая улыбается.</h1>
+              <p class="lead">
+                BrewLab готовит эспрессо на свежей обжарке, делает фильтр без горечи
+                и печёт десерты так, что хочется “ещё один кусочек” без переговоров с совестью.
+              </p>
+
+              <div class="hero-actions">
+                <a class="btn primary" href="#menu">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M7 8h10M7 12h10M7 16h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  Смотреть меню
+                </a>
+                <a class="btn" href="#about">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 2l8 4v6c0 5-3.5 9.4-8 10-4.5-.6-8-5-8-10V6l8-4z"
+                      stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  </svg>
+                  Почему мы
+                </a>
+              </div>
+
+              <div class="quick">
+                <div class="q">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  <div><b>Онлайн-заказ</b><div class="muted">самовывоз за 10–15 минут</div></div>
+                </div>
+                <div class="q">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 21s-7-4.6-9-10c-1.2-3.2 1-6 4.1-6 1.8 0 3.2 1 3.9 2.2C11.7 6 13.1 5 14.9 5c3.1 0 5.3 2.8 4.1 6-2 5.4-9 10-9 10z"
+                      stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  </svg>
+                  <div><b>Тёплая атмосфера</b><div class="muted">работа, встречи, “перезагрузка”</div></div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="hero-visual" aria-label="Визуал">
+              <div class="polaroid">
+                <div class="photo">
+                  <div class="latte-art" aria-hidden="true"></div>
+                </div>
+                <div class="caption">
+                  <div class="left">
+                    <div class="t">BrewLab Signature</div>
+                    <div class="s">Эспрессо + фильтр + десерты</div>
+                  </div>
+                  <div class="chip">open 08:00–22:00</div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="menu">
+        <div class="section-head">
+          <div>
+            <h2>Меню</h2>
+            <p>Фильтруй по категориям и ищи по названию.</p>
+          </div>
+        </div>
+
+        <div class="menu-controls">
+          <div class="seg" aria-label="Фильтр меню">
+            <button type="button" class="active" data-filter="all">Все</button>
+            <button type="button" data-filter="coffee">Кофе</button>
+            <button type="button" data-filter="dessert">Десерты</button>
+            <button type="button" data-filter="bakery">Выпечка</button>
+          </div>
+
+          <div class="search" role="search">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M16.2 16.2L21 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input id="q" type="search" placeholder="Например: латте, чизкейк…" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="card" id="menuList" aria-label="Список меню">
+          <div class="item" data-cat="coffee">
+            <div class="meta">
+              <div class="name">Капучино</div>
+              <div class="desc">Классика с мягкой молочной пеной</div>
+            </div>
+            <div class="price">25 000</div>
+          </div>
+          <div class="item" data-cat="coffee">
+            <div class="meta">
+              <div class="name">Латте</div>
+              <div class="desc">Нежный баланс кофе и молока</div>
+            </div>
+            <div class="price">28 000</div>
+          </div>
+          <div class="item" data-cat="coffee">
+            <div class="meta">
+              <div class="name">Фильтр-кофе</div>
+              <div class="desc">Чистый вкус, сезонная обжарка</div>
+            </div>
+            <div class="price">22 000</div>
+          </div>
+
+          <div class="item" data-cat="dessert">
+            <div class="meta">
+              <div class="name">Чизкейк</div>
+              <div class="desc">Кремовый, без лишней сладости</div>
+            </div>
+            <div class="price">35 000</div>
+          </div>
+          <div class="item" data-cat="dessert">
+            <div class="meta">
+              <div class="name">Брауни</div>
+              <div class="desc">Шоколадный, влажный, “ещё один”</div>
+            </div>
+            <div class="price">30 000</div>
+          </div>
+
+          <div class="item" data-cat="bakery">
+            <div class="meta">
+              <div class="name">Круассан</div>
+              <div class="desc">Слоёный, хрустящий, свежая выпечка</div>
+            </div>
+            <div class="price">24 000</div>
+          </div>
+          <div class="item" data-cat="bakery">
+            <div class="meta">
+              <div class="name">Синнабон</div>
+              <div class="desc">Корица, глазурь, тёплый аромат</div>
+            </div>
+            <div class="price">27 000</div>
+          </div>
+
+          <div class="tagline">*Цены демонстрационные для портфолио. Можно заменить на “от …”.</div>
+        </div>
+      </section>
+
+      <section id="about">
+        <div class="section-head">
+          <div>
+            <h2>О нас</h2>
+            <p>Коротко, по делу, без философии на 12 страниц.</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="pill"><span class="mini"></span> Обжарка</div>
+            <h3>Свежие зёрна</h3>
+            <p>Работаем с поставщиками, которые уважают вкус и стабильность чашки.</p>
+          </article>
+          <article class="card">
+            <div class="pill"><span class="mini" style="background: var(--warm)"></span> Бариста</div>
+            <h3>Чёткие рецепты</h3>
+            <p>Настройка помола и экстракции каждый день. Кофе не “как получится”.</p>
+          </article>
+          <article class="card">
+            <div class="pill"><span class="mini" style="background: var(--mint)"></span> Атмосфера</div>
+            <h3>Уют и Wi-Fi</h3>
+            <p>Можно работать, читать или просто пить кофе и смотреть на жизнь.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="reviews">
+        <div class="section-head">
+          <div>
+            <h2>Отзывы</h2>
+            <p>Пара коротких цитат для доверия (в портфолио можно оставить демо).</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="quote">
+              <div class="avatar" aria-hidden="true"></div>
+              <div>
+                <p>“Фильтр реально чистый, без горечи. И чизкейк прям в точку.”</p>
+                <div class="who">Малика, постоянный гость</div>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="quote">
+              <div class="avatar" aria-hidden="true"></div>
+              <div>
+                <p>“Тут можно спокойно поработать. Кофе стабильный, место спокойное.”</p>
+                <div class="who">Дилшод, фрилансер</div>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="quote">
+              <div class="avatar" aria-hidden="true"></div>
+              <div>
+                <p>“Круассан свежий, капучино ровный. Вечером возвращаюсь снова.”</p>
+                <div class="who">Азиза, студентка</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="contact">
+        <div class="section-head">
+          <div>
+            <h2>Контакты</h2>
+            <p>Форма ниже демонстрационная. В реальном заказе подключим отправку в Telegram или на email.</p>
+          </div>
+        </div>
+
+        <div class="contact-grid">
+          <article class="card">
+            <h3>Бронирование</h3>
+            <form id="bookingForm" novalidate>
+              <div class="row">
+                <label>
+                  Имя
+                  <input type="text" name="name" placeholder="Например: Behzod" required minlength="2" />
+                </label>
+                <label>
+                  Контакт (телефон/Telegram)
+                  <input type="text" name="contact" placeholder="+998… или @username" required minlength="4" />
+                </label>
+              </div>
+
+              <div class="row">
+                <label>
+                  Дата
+                  <input type="date" name="date" required />
+                </label>
+                <label>
+                  Время
+                  <input type="time" name="time" required />
+                </label>
+              </div>
+
+              <label>
+                Комментарий
+                <textarea name="note" placeholder="Например: столик у окна, 2 человека…" required minlength="6"></textarea>
+              </label>
+
+              <button class="btn primary" type="submit">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 12l16-8-5 16-3-7-8-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+                Отправить
+              </button>
+
+              <div class="status" id="status" role="status" aria-live="polite"></div>
+            </form>
+          </article>
+
+          <aside class="card">
+            <h3>Где мы</h3>
+            <p class="hint">
+              Адрес и контакты можно оставить демо, чтобы не привязываться к реальной кофейне.
+            </p>
+
+            <div class="card" style="margin-top:12px; background: rgba(0,0,0,0.22);">
+              <div style="display:grid; gap:8px; color: var(--muted); font-size:14px">
+                <div><b style="color:var(--text)">Адрес:</b> ул. Example, 12, Andijan</div>
+                <div><b style="color:var(--text)">Тел:</b> +998 (90) 000-00-00</div>
+                <div><b style="color:var(--text)">Instagram:</b> @brewlab.coffee</div>
+                <div><b style="color:var(--text)">Часы:</b> 08:00–22:00</div>
+              </div>
+            </div>
+
+            <p class="hint" style="margin-top:12px">
+              Для портфолио удобно: добавить кнопку “Скопировать адрес” и ссылку на карты. Можем сделать потом.
+            </p>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="foot">
+        <div>© <span id="year"></span> BrewLab. Портфолио-демо проект.</div>
+        <div style="display:flex; gap:14px; flex-wrap:wrap">
+          <a href="#menu">Меню</a>
+          <a href="#about">О нас</a>
+          <a href="#reviews">Отзывы</a>
+          <a href="#contact">Контакты</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // год в футере
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // мобильное меню
+    const burger = document.getElementById("burger");
+    const drawer = document.getElementById("drawer");
+
+    if (burger && drawer) {
+      burger.addEventListener("click", () => {
+        const open = drawer.classList.toggle("open");
+        burger.setAttribute("aria-expanded", String(open));
+      });
+      drawer.querySelectorAll("a").forEach(a => {
+        a.addEventListener("click", () => {
+          drawer.classList.remove("open");
+          burger.setAttribute("aria-expanded", "false");
+        });
+      });
+    }
+
+    // фильтр меню
+    const segButtons = Array.from(document.querySelectorAll(".seg button"));
+    const items = Array.from(document.querySelectorAll("#menuList .item"));
+    const q = document.getElementById("q");
+
+    let activeFilter = "all";
+
+    function applyFilter(){
+      const query = (q?.value || "").trim().toLowerCase();
+
+      items.forEach(el => {
+        const cat = el.getAttribute("data-cat") || "";
+        const text = el.textContent.toLowerCase();
+
+        const okCat = activeFilter === "all" ? true : cat === activeFilter;
+        const okQuery = query ? text.includes(query) : true;
+
+        el.style.display = (okCat && okQuery) ? "flex" : "none";
+      });
+    }
+
+    segButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        segButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = btn.getAttribute("data-filter") || "all";
+        applyFilter();
+      });
+    });
+
+    if (q) q.addEventListener("input", applyFilter);
+
+    // демо отправка формы
+    const form = document.getElementById("bookingForm");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(type, text){
+      statusEl.className = "status " + type;
+      statusEl.textContent = text;
+    }
+
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const data = new FormData(form);
+        const name = String(data.get("name") || "").trim();
+        const contact = String(data.get("contact") || "").trim();
+        const date = String(data.get("date") || "").trim();
+        const time = String(data.get("time") || "").trim();
+        const note = String(data.get("note") || "").trim();
+
+        if (name.length < 2) return setStatus("err", "Проверь имя: минимум 2 символа.");
+        if (contact.length < 4) return setStatus("err", "Проверь контакт: минимум 4 символа.");
+        if (!date) return setStatus("err", "Выбери дату.");
+        if (!time) return setStatus("err", "Выбери время.");
+        if (note.length < 6) return setStatus("err", "Комментарий слишком короткий.");
+
+        setStatus("ok", "Заявка отправлена (демо). Мы подтвердим бронь сообщением.");
+        form.reset();
+      });
+    }
+  </script>
+</body>
+</html>
